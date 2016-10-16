@@ -26,20 +26,19 @@ The following **optional** features are implemented:
 
 The following **additional** features are implemented:
 
-- [ ] 
+- [x] As you reach the bottom of the `UIScrollView` within the table/collection view, more movies are fetchd to make the display continuous.
 
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
-
-GIF created with [LiceCap](http://www.cockos.com/licecap/).
+<img src='http://i.imgur.com/s1dazH5.gifv' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 ## Notes
 
-I did all of the UI programmatically and could not get the `UIScrollView` to work in the DetailsVC. I spent an hour trying to figure it out before realizing that a `UIImageView` has `iUserInteractionEnabled = false` by default and embedding the `UIScrollView` as it's child would disallow scrolling until enabling user interaction.
-I implemented the segmented control inefficiently. I started with a `UITableViewController` and didn't want to restart from scratch with a `UIViewControll` subclass so I instead just hotswapped out a `UITableViewController` subclass with a `UICollectionViewController` subclass upon selection of the `UISegmentedControl.`
+I implemented the entire project without Storyboards and thus had to deal with a TON of intracicies that I did not know about regarding setting up various UIKit elements programmatically. A few quick examples are that `UIViewControllers` have an automatic inset added to `UIScrollViews` that are subviews of `view` or `view` itself. However, there are various things that break this functionality that didn't really seem to make much sense.
+
+Another issue I ran into was that I started the project with a class `MoviesTVC` as a `UITableViewController` subclass to display the list of movies. When the `UISegmentedControl` was to be implemented, I instead chose to implement a `UICollectionViewController` subclass as well. First, you can't use a parent class to save yourself the duplicated code since you can't redefine the subclasses of `UITableViewController` or `UICollectionViewController`. I instead tried to use protocols to capture the duplicated code but I ran into some problems where somethings required the protocol to be `@objc` while others would not work with `@objc`. In order to make it work, I'd have to make multiple protocols to capture all this. So I quit that path and eventually just made a `UIViewController` whose `view` had both a collection and table view.
 
 ## License
 

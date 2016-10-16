@@ -20,7 +20,6 @@ struct Movie {
     let vote_average: Double
     let vote_count: Int
     init(json: JSON) {
-        print(json)
         title = json["title"].stringValue
         overview = json["overview"].stringValue
         popularity = json["popularity"].doubleValue

@@ -18,15 +18,7 @@ struct Colors {
     static let tabBarBackground = Colors.blue
     static let tint = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
 }
-enum Fonts {
-    case movieCellTitleLabel
-    case movieCellOverviewLabel
-    var font: UIFont {
-        switch self {
-        case .movieCellTitleLabel:
-            return UIFont.systemFont(ofSize: 14)
-        case .movieCellOverviewLabel:
-            return UIFont.systemFont(ofSize: 9)
-        }
-    }
+struct Fonts {
+    static let movieCellTitleLabel = UIFont.systemFont(ofSize: 14)
+    static let movieCellOverviewLabel = UIFont.systemFont(ofSize: 9)
 }

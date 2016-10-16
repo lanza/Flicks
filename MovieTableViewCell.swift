@@ -1,6 +1,6 @@
 import UIKit
 
-class MovieCell: UITableViewCell {
+class MovieTableViewCell: UITableViewCell {
     func configure(for movie: Movie) {
         posterImageView.af_setImage(withURL: movie.posterURL, placeholderImage: UIImage(), filter: nil, progress: nil, progressQueue: .main, imageTransition: .crossDissolve(0.3), runImageTransitionIfCached: false, completion: nil)
         titleLabel.text = movie.title
@@ -46,27 +46,8 @@ class MovieCell: UITableViewCell {
     let overviewLabel = UILabel.movieCellOverviewLabel()
 }
 
-struct Lets {
-    static let posterImageSize = 185
-    static let bigPosterImageSize = 500
-    static let movieCellBuffer: CGFloat = 8
-    static let posterImageViewHeight: CGFloat = 132
-    static let posterImageViewWidth: CGFloat = 92
-}
 
-extension UILabel {
-    static func movieCellTitleLabel() -> UILabel {
-        let label = UILabel()
-        label.numberOfLines = 0
-        label.font = Fonts.movieCellTitleLabel.font
-        return label
-    }
-    static func movieCellOverviewLabel() -> UILabel {
-        let label = UILabel()
-        label.numberOfLines = 10
-        label.font = Fonts.movieCellOverviewLabel.font
-        return label
-    }
-}
+
+
 
 
