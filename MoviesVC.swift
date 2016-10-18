@@ -10,7 +10,8 @@ class MoviesVC: UIViewController {
     let collectionViewSearchController = UISearchController(searchResultsController: nil)
     let networkErrorBanner = UIView()
     let segmentedControl = UISegmentedControl(items: ["list","grid"])
-    let refreshControl = UIRefreshControl()
+    let tableViewRefreshControl = UIRefreshControl()
+    let collectionViewRefreshControl = UIRefreshControl()
     
     let tableView = UITableView()
     let collectionView = UICollectionView(frame: CGRect(), collectionViewLayout: UICollectionViewFlowLayout())
@@ -21,6 +22,8 @@ class MoviesVC: UIViewController {
         collectionView.isHidden = !collectionView.isHidden
     }
     func didRefresh() {
+        collectionViewRefreshControl.beginRefreshing()
+        tableViewRefreshControl.beginRefreshing()
         download()
     }
     //MARK: - Lifecycle
@@ -47,7 +50,8 @@ class MoviesVC: UIViewController {
         _ = EZLoadingActivity.show("Loading...", disableUI: false)
         DownloadManager.shared.get(type: type, page: 1) { movies in
             _ = EZLoadingActivity.hide(movies != nil, animated: false)
-            self.refreshControl.endRefreshing()
+            self.tableViewRefreshControl.endRefreshing()
+            self.collectionViewRefreshControl.endRefreshing()
             guard let movies = movies else {
                 self.networkErrorBanner.isHidden = false
                 return
@@ -88,7 +92,10 @@ class MoviesVC: UIViewController {
         segmentedControl.addTarget(self, action: #selector(segmentChanged), for: .valueChanged)
     }
     func setupRefreshControl() {
-        refreshControl.addTarget(self, action: #selector(didRefresh), for: .valueChanged)
+        tableViewRefreshControl.addTarget(self, action: #selector(didRefresh), for: .valueChanged)
+        tableView.insertSubview(tableViewRefreshControl, at: 0)
+        collectionViewRefreshControl.addTarget(self, action: #selector(didRefresh), for: .valueChanged)
+        collectionView.insertSubview(collectionViewRefreshControl, at: 0)
     }
     func setupTableView() {
         view.addSubview(tableView)
