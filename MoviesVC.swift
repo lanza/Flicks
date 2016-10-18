@@ -2,7 +2,29 @@ import UIKit
 import AlamofireImage
 import EZLoadingActivity
 
+extension MoviesVC: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if !dataIsLoading {
+            
+            let tableViewScrollViewContentHeight = tableView.contentSize.height
+            let tableViewScrollOffsetThreshold = tableViewScrollViewContentHeight - tableView.bounds.height
+            
+            let collectionViewScrollViewContentHeight = collectionView.contentSize.height
+            let collectionViewScrollOffsetThreshold = collectionViewScrollViewContentHeight - collectionView.bounds.height
+            
+            if (scrollView.contentOffset.y > tableViewScrollOffsetThreshold && tableView.isDragging) || (scrollView.contentOffset.y > collectionViewScrollOffsetThreshold && collectionView.isDragging) {
+                
+                page += 1
+                download()
+            }
+        }
+    }
+}
+
 class MoviesVC: UIViewController {
+    
+    var dataIsLoading = false
+    
     var delegate: MoviesVCDelegate!
     var type: DownloadManager.GetType!
     
@@ -24,6 +46,7 @@ class MoviesVC: UIViewController {
     func didRefresh() {
         collectionViewRefreshControl.beginRefreshing()
         tableViewRefreshControl.beginRefreshing()
+        page = 1
         download()
     }
     //MARK: - Lifecycle
@@ -35,6 +58,8 @@ class MoviesVC: UIViewController {
         setupCollectionView()
         setupRefreshControl()
         setupSegmentedControl()
+        setupActivityIndicator()
+        page = 1
         download()
         automaticallyAdjustsScrollViewInsets = false
     }
@@ -44,27 +69,40 @@ class MoviesVC: UIViewController {
         collectionView.contentInset = insets
         tableView.contentInset = insets
     }
-   
+    var page = 1
     //MARK: - Model
     func download() {
         _ = EZLoadingActivity.show("Loading...", disableUI: false)
-        DownloadManager.shared.get(type: type, page: 1) { movies in
+        dataIsLoading = true
+        DownloadManager.shared.get(type: type, page: page) { movies in
             _ = EZLoadingActivity.hide(movies != nil, animated: false)
             self.tableViewRefreshControl.endRefreshing()
             self.collectionViewRefreshControl.endRefreshing()
+            self.dataIsLoading = false
             guard let movies = movies else {
                 self.networkErrorBanner.isHidden = false
                 return
             }
-            self.movies = movies
+            if self.page == 1 {
+                self.movies = movies
+            } else {
+                self.movies += movies
+            }
             self.tableView.reloadData()
             self.collectionView.reloadData()
         }
     }
+    
     var movies = [Movie]() { didSet { filteredMovies = movies } }
     var filteredMovies = [Movie]()
     
     //MARK: - setup
+    var activityIndicatorView = UIActivityIndicatorView()
+    func setupActivityIndicator() {
+        activityIndicatorView.center = view.center
+        activityIndicatorView.activityIndicatorViewStyle = .gray
+        activityIndicatorView.hidesWhenStopped = true
+    }
     func setupSearchController() {
         let scs = [tableViewSearchController,collectionViewSearchController]
         scs.forEach { sc in
